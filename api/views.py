@@ -26,3 +26,9 @@ class NoteViewSet(ModelViewSet):
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated, IsOwner]
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.queryset.filter(owner=request.user)
+        serializer =UserSerializer(instance=queryset, many=True)
+        return Response(serializer.data)
